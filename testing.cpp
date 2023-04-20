@@ -8,5 +8,6 @@ int main(void) {
     addch(c);
     getch();
     endwin();
+    cout<<"hi";
     return 0;
 }
