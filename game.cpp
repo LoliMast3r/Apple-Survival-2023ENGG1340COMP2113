@@ -6,12 +6,14 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <array>
 using namespace std;
 
-void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width) {
-    int PortalChosen; 
+int PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width) {
+    int PortalChosen; bool touched = false; 
     for (int i=0; i<3;i++) {
         if (fruitX == Portal[i][0] && fruitY == Portal[i][1]) { //if apple touches portal....
+            touched = true;
             while (true) {
                 PortalChosen = rand()%3; //randomly select another portal to teleport to
                 if (PortalChosen != i) { //make sure it isn't the same portal
@@ -61,7 +63,7 @@ void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int hei
     for (int i=0; i<3; i++) {
         mvwprintw(win, Portal[i][1], Portal[i][0], "@" ); //Prints the Portal 
     }
-    
+    return touched;
 }
 void clearWindow(WINDOW *win, int height, int width) {
     //fills window with space (" ")
@@ -181,6 +183,12 @@ void Highscores(WINDOW *win,int height, int width, string &select, int page){ //
     }
     clearWindow(win, height, width);  
 }
+void importscore(string name,int score){
+    ofstream Write;
+    Write.open("highscore.txt",ios::app);
+    Write << name << " " << score;
+    Write.close();
+}
 
 void printArt(WINDOW *win, string filename) {
     string line = "";
@@ -201,6 +209,35 @@ void printArt(WINDOW *win, string filename) {
     inFile.close();
 }
 
+void scorescreen(WINDOW *win,int height,int timeS,int PortalS){
+    echo();
+    refresh();
+
+    int total;string name;
+    total = timeS+PortalS;
+    array<string,2> cat = {"Playing Time:","Portals Used:"};
+    array<int,2> ss = {timeS,PortalS};
+    string title = "Metric           Scores";
+    string title2 = "_____________________________";
+    string entername = "Enter your name: ";
+    mvwprintw(win,5,13,"%s",title.c_str());
+    mvwprintw(win,6,10,"%s",title2.c_str());
+    for(int i=0;i<cat.size();i++){
+        mvwprintw(win,((height-4)/2)+i-2,10,"%s",cat[i].c_str()); // print categories
+
+        string tempscore = "        "; // align to right
+        tempscore.replace(8-to_string(ss[i]).length(),to_string(ss[i]).length(),to_string(ss[i]));
+        mvwprintw(win,((height-4)/2)+i-2,30,"%s",tempscore.c_str());
+    }
+    mvwprintw(win,14,10,"%s",title2.c_str());
+    string temptotal = "        ";
+    temptotal.replace(8-to_string(total).length(),to_string(total).length(),to_string(total));
+    string totalsss = "Total:              "+temptotal;
+    mvwprintw(win,15,10,"%s",totalsss.c_str());
+    mvwprintw(win,18,11,"%s",entername.c_str()); // get name for import highscore
+    name = mvwgetch(win,18,28);
+    importscore(name,total);
+}
 
 void fruitMovement(string inputFruit, string& prevMoveFruit, int& fruitX, int& fruitY, float &updateDelay1, double gameSpeed1) {
     //handles the movement of the fruit with user input
@@ -312,7 +349,7 @@ void checkBoundary(int& Pos, int bound1, int bound2) {
     
 }
 
-void snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) {
+int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) {
     //spawn position of snake head (X, Y coord)
         int snakeX = 1;
         int snakeY = 1;
@@ -349,6 +386,14 @@ void snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) 
         clock_t prevFruitInputTime;
         prevFruitInputTime = clock();
 
+        //check Gametime
+        clock_t Gametime;
+        clock_t ElapsedGametime;
+        clock_t GameEndtime;
+        Gametime = clock();
+
+        //some scoring para
+        int portalscore = 0;
         float updateDelay = 0.1; //snake Update Delay
         double gameSpeed = 1; //factor that affects snake speed
 
@@ -359,7 +404,7 @@ void snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) 
         bool gameOver = false;
 
         int Portal[3][2]; //Store coordinates of Portals
-        srand(time(NULL)); //set random seed
+        unsigned int srand(time(NULL)); //set random seed
         Portal[0][0] = (rand() % (width-3))+1; //Sets up initial position for the 3 portals
         Portal[0][1] = (rand() % (height-4))+1;
         for (int i=1; i<3; i++) {
@@ -448,7 +493,7 @@ void snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) 
                 //allow passing through the boundaries
                 checkBoundary(fruitX, 0, width-1);
                 checkBoundary(fruitY, 0, height-1);
-                PortalGen(fruitX, fruitY, Portal, win, height,width); //checks if fruit reaches portal
+                if(PortalGen(fruitX, fruitY, Portal, win, height,width)) portalscore += 10; //checks if fruit reaches portal
             }
 
             //prints the snake
@@ -486,9 +531,13 @@ void snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) 
 
             //game ends
             if (gameOver == true) {
-                break;
+                int timescore;
+                GameEndtime = clock();
+                timescore = ((double)(GameEndtime - Gametime))/CLOCKS_PER_SEC;
+                return timescore,portalscore;
             }
         }
+    return 0;
 }
 
 int main() {
@@ -520,8 +569,9 @@ int main() {
             mainMenu(win, height, width, select, slotNum); //generates main menu
             if (select == "\n") { //if enter is pressed 
                 if (slotNum == 0) { //and new game is selected
+                    int timescore,portalscore;
                     clearWindow(win, height, width); 
-                    snakeGame(win, height, width, snakeW, playerW); //start snake game
+                    timescore,portalscore = snakeGame(win, height, width, snakeW, playerW); //start snake game
 
                     clearWindow(win, height, width);
 
@@ -532,21 +582,19 @@ int main() {
                         filename = "gameWin.txt"; //prints win screen
                     }
                     printArt(win, filename); 
-
+                    clearWindow(win, height, width);
+                    
                     string c;
                     do {
                         c = wgetch(win);
                     } while (c != "\n"); //waits for any input
 
-                    clearWindow(win, height, width);
-
-                    filename = "gameScore.txt";
-                    printArt(win, filename);
+                    scorescreen(win,height,timescore,portalscore);
                     do {
                         c = wgetch(win);
-                    } while (c!= "\n");
-
+                    } while (c != "\n");
                     clearWindow(win, height, width);
+
                 } else if (slotNum == 3) {//and quit is selected
                     fullGameOver = true;
                     break; //quits game
