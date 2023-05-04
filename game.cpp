@@ -3,6 +3,7 @@
 #include <ctime>
 #include <iostream>
 #include <fstream>
+#include <vector>
 using namespace std;
 
 void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width) {
@@ -107,6 +108,26 @@ void mainMenu(WINDOW *win, int height, int width, string &select, int &slotNum) 
         slotNum = 3;
     }
 }
+
+void Highscores(WINDOW *win,int height, int width, string &select){ //browse highscores(testing)
+    noecho();
+    refresh();
+
+    string name; int score;
+    vector <string> names; vector <int> scores;
+    ifstream File;
+
+    File.open("highscore.txt"); // append highscore names and values into a vector for iteration
+    while(File >> name >> score){
+        names.push_back(name);
+        scores.push_back(score);
+    }
+  File.close();
+
+    for(int i=0; i<names.size(); i++){
+        cout << names[i] << " " << scores[i] << endl;
+    }
+} 
 
 void printArt(WINDOW *win, string filename) {
     string line = "";
@@ -476,6 +497,10 @@ int main() {
                 } else if (slotNum == 3) {//and quit is selected
                     fullGameOver = true;
                     break; //quits game
+                }
+                if (slotNum == 2) { //and Highscore is selected
+                clearWindow(win, height, width); 
+                Highscores(win, height, width, select); //Display Highscores
                 }
             }
         }

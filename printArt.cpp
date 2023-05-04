@@ -42,8 +42,8 @@ int main() {
     box(win,0,0); //sets border
 
     string filename = "gameOver.txt";
-    printArt(filename);
-    wrefresh();
+    printArt(win,filename);
+    wrefresh(win);
 
     endwin();
 }
