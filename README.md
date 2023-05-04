@@ -36,7 +36,8 @@ Please install ncurses if you have not installed it in your operating system.
 ### Compilation
 To start the game, simply type:
 > make game  
-> ./game  
+> ./game
+
 and the game will start.  
 
 For cleaning game files, there are three options:
