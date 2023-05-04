@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <cmath>
 using namespace std;
 
 void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width) {
@@ -109,35 +111,76 @@ void mainMenu(WINDOW *win, int height, int width, string &select, int &slotNum) 
     }
 }
 
-void Highscores(WINDOW *win,int height, int width, string &select){ //browse highscores(testing)
+void Highscores(WINDOW *win,int height, int width, string &select, int page){ //browse highscores
+    clearWindow(win, height, width); 
     noecho();
     refresh();
 
-    string name; int score;
-    vector <string> names; vector <int> scores;
+    string name;int score;
+    vector <pair<string,int>> scores; // make a paired vector for easy sorting
+
     ifstream File;
 
     File.open("highscore.txt"); // append highscore names and values into a vector for iteration
     while(File >> name >> score){
-        names.push_back(name);
-        scores.push_back(score);
+        scores.push_back(make_pair(name,score));
     }
-    File.close();
-    wrefresh(win);
+    File.close(); 
+    if(scores.size()==0){  //print msg if no scores yet.
+        string noscores = "No Scores yet!";
+        mvwprintw(win,11,19,"%s",noscores.c_str());
+    } 
+    else{
+        sort(scores.begin(),scores.end(), [](const pair<string,int> &left, const pair<string,int> &right) {
+        return left.second > right.second;}); //sort pairs according to scores
 
-    string temp;
-    for(int i=0; i<names.size(); i++){
-        if(names[i].length() > 10) temp = names[i].substr(0,10);
-        else temp = names[i];
-        mvwprintw(win,((height-4)/2)+i-2,13,"%s",temp.c_str());
-        mvwprintw(win,((height-4)/2)+i-2,27,"%s",to_string(scores[i]).c_str());
-    }
+        string tempname,tempscore;int vecsize;
+        if(8*page > scores.size()) vecsize = scores.size() - 8*(page-1); //8 scores per page
+        else vecsize = 8;
+
+        for(int i=0; i<vecsize; i++){
+            if(scores[8*(page-1)+i].first.length() > 10) tempname = scores[8*(page-1)+i].first.substr(0,10); // formatting width to 10 in case name is too long
+            else tempname = scores[8*(page-1)+i].first;
+            tempscore = "        "; // align to right
+            tempscore.replace(8-(to_string(scores[8*(page-1)+i].second).length()),to_string(scores[8*(page-1)+i].second).length(),to_string(scores[8*(page-1)+i].second));
+
+            mvwprintw(win,((height-4)/2)+i-2,11,"%s",tempname.c_str());
+            mvwprintw(win,((height-4)/2)+i-2,29,"%s",tempscore.c_str());
+        }  
+    }      
+
+    int b = floor(scores.size()/8)+1; // Layout for Highscores
+    string title = "Highscores";
+    string title2 = "-----------------------------";
+    string pagestr = "<Page "+to_string(page)+" of "+to_string(b)+">";
+    string instructions = "Press a and d to change page number.";
+    string instructions2 = "Or press s to go back.";
+    mvwprintw(win,5,20,"%s",title.c_str());
+    mvwprintw(win,6,10,"%s",title2.c_str());
+    mvwprintw(win,17,19,"%s",pagestr.c_str());
+    mvwprintw(win,18,7,"%s",instructions.c_str());
+    mvwprintw(win,19,14,"%s",instructions2.c_str());
     string userInput;
-    userInput = wgetch(win);
-    while (userInput != "x") {
-        userInput = wgetch(win);
+    while (true) {
+        userInput = wgetch(win);     //page scrolling and back to main        
+        if(userInput == "a"){ 
+            if(page != 1)page -= 1;  
+            clearWindow(win, height, width); 
+            Highscores(win, height, width, select,page); 
+        }
+
+        if(userInput == "d"){
+            if(page != b)page += 1; 
+            clearWindow(win, height, width);  
+            Highscores(win, height, width, select,page);
+        }
+
+        if(userInput == "s"){
+            break;
+        }
     }
-} 
+    clearWindow(win, height, width);  
+}
 
 void printArt(WINDOW *win, string filename) {
     string line = "";
@@ -509,9 +552,8 @@ int main() {
                     break; //quits game
                 }
                 if (slotNum == 2) { //and Highscore is selected
-                clearWindow(win, height, width); 
-                Highscores(win, height, width, select); //Display Highscores
-                clearWindow(win, height, width); 
+                    clearWindow(win, height, width);
+                    Highscores(win, height, width, select,1); //Display Highscores
                 }
             }
         }
