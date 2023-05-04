@@ -132,6 +132,11 @@ void Highscores(WINDOW *win,int height, int width, string &select){ //browse hig
         mvwprintw(win,((height-4)/2)+i-2,13,"%s",temp.c_str());
         mvwprintw(win,((height-4)/2)+i-2,27,"%s",to_string(scores[i]).c_str());
     }
+    string userInput;
+    userInput = wgetch(win);
+    while (userInput != "x") {
+        userInput = wgetch(win);
+    }
 } 
 
 void printArt(WINDOW *win, string filename) {
@@ -506,6 +511,7 @@ int main() {
                 if (slotNum == 2) { //and Highscore is selected
                 clearWindow(win, height, width); 
                 Highscores(win, height, width, select); //Display Highscores
+                clearWindow(win, height, width); 
                 }
             }
         }
