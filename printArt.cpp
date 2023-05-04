@@ -25,8 +25,7 @@ void printArt(WINDOW *win, string filename) {
 }
 
 
-//the main() only serves as a sample for the overall logic
-//the validity of the file was not checked
+//Sample main() file. Not used for in-game.
 int main() {
     clear();
     initscr();
