@@ -26,14 +26,14 @@ File IO and sorting are used in this feature.
 In the game, powerups and perks will appear to assist the player.    
 Random functions are used in this feature.  
 
-### Non-standard C/C++ Libraries
+## Non-standard C/C++ Libraries
 ***Important!***  
 **ncurses** is used in this game for in-game content display.  
 **makefile failure** will happen if ncurses is not present in your operating system.  
 Please install ncurses if you have not installed it in your operating system.  
 > sudo apt-get install libncurses5-dev libncursesw5-dev
 
-### Compilation
+## Compilation
 To start the game, simply type:
 > make game  
 > ./game
