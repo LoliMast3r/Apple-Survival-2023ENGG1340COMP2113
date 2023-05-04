@@ -122,10 +122,15 @@ void Highscores(WINDOW *win,int height, int width, string &select){ //browse hig
         names.push_back(name);
         scores.push_back(score);
     }
-  File.close();
+    File.close();
+    wrefresh(win);
 
+    string temp;
     for(int i=0; i<names.size(); i++){
-        cout << names[i] << " " << scores[i] << endl;
+        if(names[i].length() > 10) temp = names[i].substr(0,10);
+        else temp = names[i];
+        mvwprintw(win,((height-4)/2)+i-2,13,"%s",temp.c_str());
+        mvwprintw(win,((height-4)/2)+i-2,27,"%s",to_string(scores[i]).c_str());
     }
 } 
 
