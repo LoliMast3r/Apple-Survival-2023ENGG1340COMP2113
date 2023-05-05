@@ -26,11 +26,10 @@ int locationGenerator(){
       }
 }
 
+int item_number=0;
 void printItem(int playerx, int playery, int snakex, int snakey, int item_picked){
-  while{gameOver!==True){
-      int item_number=0;
       int sec = currentSec().elapsed_seconds;
-      if (sec/10)==0 and (item_number==0){
+      if ((sec/10)==0) and (item_number==0){
           item_number+=1;
           int location_x=locationGenerator().x;
           int location_y=locationGenerator().y;
@@ -45,10 +44,7 @@ void printItem(int playerx, int playery, int snakex, int snakey, int item_picked
               mvwprintw(win,location_y,location_x," ");
           }
       }
-      if gameOver==True{
         return item_picked;
-      break
-      }
   }
           
           
