@@ -9,6 +9,7 @@ We are Group 77, a team of five students from ENGG1340-COMP2113(22-23 Sem 2):
 + Tsui Chit Hei  
 + Wong Kai Ching  
 + Wong Chun Wang  
+
 Together, we've taken the classic snake game and given it a fresh twist, creating a game that is both nostalgic and exciting.
 
 ## How To Play
