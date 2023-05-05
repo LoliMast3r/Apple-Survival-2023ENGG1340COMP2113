@@ -27,7 +27,6 @@ int locationGenerator(){
 }
 
 void printItem(int playerx, int playery, int snakex, int snakey, int item_picked){
-  srand(time(0));
   while{gameOver!==True){
       int item_number=0;
       int sec = currentSec().elapsed_seconds;
