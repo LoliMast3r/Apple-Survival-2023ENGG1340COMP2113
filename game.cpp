@@ -9,11 +9,12 @@
 #include <array>
 using namespace std;
 
-int PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width) {
+void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width, int &portalscore) {
     int PortalChosen; bool touched = false; 
     for (int i=0; i<3;i++) {
         if (fruitX == Portal[i][0] && fruitY == Portal[i][1]) { //if apple touches portal....
             touched = true;
+            portalscore=portalscore+1;
             while (true) {
                 PortalChosen = rand()%3; //randomly select another portal to teleport to
                 if (PortalChosen != i) { //make sure it isn't the same portal
@@ -63,7 +64,6 @@ int PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int heig
     for (int i=0; i<3; i++) {
         mvwprintw(win, Portal[i][1], Portal[i][0], "@" ); //Prints the Portal 
     }
-    return touched;
 }
 void clearWindow(WINDOW *win, int height, int width) {
     //fills window with space (" ")
@@ -214,7 +214,7 @@ void scorescreen(WINDOW *win,int height,int timeS,int PortalS){
     refresh();
     nodelay(win, false);
     int total;string name;
-    total = timeS+PortalS;
+    total = timeS+PortalS*10;
     array<string,2> cat = {"Playing Time:","Portals Used:"};
     array<int,2> ss = {timeS,PortalS};
     string title = "Metric           Scores";
@@ -356,7 +356,7 @@ void checkBoundary(int& Pos, int bound1, int bound2) {
     
 }
 
-int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) {
+int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, int &timescore) {
     //spawn position of snake head (X, Y coord)
         int snakeX = 1;
         int snakeY = 1;
@@ -500,7 +500,7 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) {
                 //allow passing through the boundaries
                 checkBoundary(fruitX, 0, width-1);
                 checkBoundary(fruitY, 0, height-1);
-                if(PortalGen(fruitX, fruitY, Portal, win, height,width)) portalscore += 10; //checks if fruit reaches portal
+                PortalGen(fruitX, fruitY, Portal, win, height,width,portalscore);
             }
 
             //prints the snake
@@ -524,7 +524,7 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) {
             //game ends when snake head touches the fruit
             if (tailXY[0][0] == fruitX && tailXY[0][1] == fruitY) {
                 snakeW = true;
-                break;
+                gameOver = true;
             }
 
             //snake dies when the head touches its tails
@@ -537,11 +537,10 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW) {
             }
 
             //game ends
-            if (gameOver == true) {
-                int timescore;
+            if (gameOver == true) {;
                 GameEndtime = clock();
                 timescore = ((double)(GameEndtime - Gametime))/CLOCKS_PER_SEC;
-                return timescore,portalscore;
+                return portalscore;
             }
         }
     return 0;
@@ -578,7 +577,7 @@ int main() {
                 if (slotNum == 0) { //and new game is selected
                     int timescore,portalscore;
                     clearWindow(win, height, width); 
-                    timescore,portalscore = snakeGame(win, height, width, snakeW, playerW); //start snake game
+                    portalscore = snakeGame(win, height, width, snakeW, playerW,timescore); //start snake game
 
                     clearWindow(win, height, width);
 
