@@ -4,7 +4,6 @@
 #include <ncurses.h>
 #include <ctime>
 #include <cstdlib>
-using namespace std;
 
 //get the real time in sec as a unit
 
