@@ -1,4 +1,4 @@
-# <span style="color:blue">Apple Rush</span>: The Classic Snake Game with a Twist
+# **Apple Rush**{: style="color:blue"}: The Classic Snake Game with a Twist
 **Are you tired of playing the same old snake game? 
 Then try Apple Rush, the game where you play as the apple trying to avoid being eaten by the snake!**
 
