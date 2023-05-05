@@ -214,13 +214,14 @@ void scorescreen(WINDOW *win,int height,int timeS,int PortalS){
     refresh();
     nodelay(win, false);
     int total;string name;
-    total = timeS+PortalS*10;
+    PortalS = PortalS*10;
+    total = timeS+PortalS;
     array<string,2> cat = {"Playing Time:","Portals Used:"};
     array<int,2> ss = {timeS,PortalS};
-    string title = "Metric           Scores";
+    string title = "Metric             Scores";
     string title2 = "_____________________________";
     string entername = "Enter your name: ";
-    mvwprintw(win,5,13,"%s",title.c_str());
+    mvwprintw(win,5,12,"%s",title.c_str());
     mvwprintw(win,6,10,"%s",title2.c_str());
     for(int i=0;i<cat.size();i++){
         mvwprintw(win,((height-4)/2)+i-2,10,"%s",cat[i].c_str()); // print categories
