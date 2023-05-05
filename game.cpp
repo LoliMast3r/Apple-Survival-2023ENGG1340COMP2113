@@ -212,7 +212,7 @@ void printArt(WINDOW *win, string filename) {
 void scorescreen(WINDOW *win,int height,int timeS,int PortalS){
     echo();
     refresh();
-
+    nodelay(win, false);
     int total;string name;
     total = timeS+PortalS;
     array<string,2> cat = {"Playing Time:","Portals Used:"};
@@ -235,7 +235,14 @@ void scorescreen(WINDOW *win,int height,int timeS,int PortalS){
     string totalsss = "Total:              "+temptotal;
     mvwprintw(win,15,10,"%s",totalsss.c_str());
     mvwprintw(win,18,11,"%s",entername.c_str()); // get name for import highscore
-    name = mvwgetch(win,18,28);
+    name = "";
+    string getchar = "s";
+    while (getchar!="\n") {
+        getchar = wgetch(win);
+        if (getchar != "\n") {
+            name += getchar;
+        }
+    }
     importscore(name,total);
 }
 
