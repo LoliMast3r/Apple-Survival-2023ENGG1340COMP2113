@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <array>
+#include <pointItem.h>
 using namespace std;
 
 void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width, int &portalscore) {
