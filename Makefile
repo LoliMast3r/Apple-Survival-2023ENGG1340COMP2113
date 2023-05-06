@@ -4,7 +4,7 @@ highscore.txt:
 	touch highscore.txt
 
 game: highscore.txt
-	g++ game.cpp -o game -lncurses
+	g++ $(FLAGS) game.cpp -o game -lncurses
 
 clearscores:
 	rm -f highscore.txt
