@@ -636,7 +636,7 @@ int main() {
     int width = 50;
     int maxX, maxY;
     getmaxyx(stdscr, maxY, maxX);
-    mvprintw(1, (maxX-10)/2, "Apple rush");  //prints game name 
+    mvprintw(1, (maxX-10)/2, "Apple Survival");  //prints game name 
     WINDOW *win = newwin(height, width, (maxY-height)/2, (maxX-width)/2); //sets window to centre
     refresh();
 
