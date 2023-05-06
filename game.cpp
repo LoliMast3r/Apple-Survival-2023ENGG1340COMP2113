@@ -599,12 +599,12 @@ int main() {
                         filename = "gameWin.txt"; //prints win screen
                     }
                     printArt(win, filename); 
-                    clearWindow(win, height, width);
                     
                     string c;
                     do {
                         c = wgetch(win);
                     } while (c != "\n"); //waits for any input
+                    clearWindow(win, height, width);
 
                     scorescreen(win,height,timescore,portalscore,itemscores);
                     do {
