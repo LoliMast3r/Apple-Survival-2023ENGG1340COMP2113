@@ -1,7 +1,8 @@
 # Apple Survival: The Classic Snake Game with a Twist
 **Are you tired of playing the same old snake game?  
 Then try Apple Survival, the game where you play as the apple trying to avoid being eaten by the snake!**
-
+# Trailer
+[![](https://img.youtube.com/vi/vnCIf_hYuTw/0.jpg)](https://www.youtube.com/watch?v=vnCIf_hYuTw)
 # Meet the Team
 We are Group 77, a team of five students from ENGG1340-COMP2113(22-23 Sem 2):
 + Yu Tin Yau  3036067353  *LoliMast3r*
