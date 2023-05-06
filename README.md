@@ -1,5 +1,5 @@
 # Apple Survival: The Classic Snake Game with a Twist
-**Are you tired of playing the same old snake game? 
+**Are you tired of playing the same old snake game?  
 Then try Apple Rush, the game where you play as the apple trying to avoid being eaten by the snake!**
 
 # Meet the Team
@@ -53,5 +53,5 @@ If you want to clean up your game files, we offer three options:
 > make uninstall
 
 # Join the Fun!
-Apple Rush is a fun and exciting game that is sure to keep you entertained for hours. 
+Apple Survival is a fun and exciting game that is sure to keep you entertained for hours. 
 So why not give it a try? :smile:
