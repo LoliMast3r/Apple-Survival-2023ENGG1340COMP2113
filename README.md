@@ -5,10 +5,10 @@ Then try Apple Rush, the game where you play as the apple trying to avoid being 
 # Meet the Team
 We are Group 77, a team of five students from ENGG1340-COMP2113(22-23 Sem 2):
 + Yu Tin Yau  
-+ Shen Wenqi  
-+ Tsui Chit Hei  
-+ Wong Kai Ching  
-+ Wong Chun Wang  
++ Shen Wenqi  3036061799
++ Tsui Chit Hei  3036067901
++ Wong Kai Ching  3036067884
++ Wong Chun Wang  3036085343
 
 Together, we've taken the classic snake game and given it a fresh twist, creating a game that is both nostalgic and exciting.
 
