@@ -39,6 +39,9 @@ You never know what you might get!
 
 The random generation of items fulfills the first requirement of random events.
 
+# Data Structures for Storing Game Status
+To keep track of game status, we've used a variety of data structures, including **arrays** and **vectors**. We use arrays to store information about the positions of game objects, as well as the coordinates of the player and the snake. Vectors are used to store highscores and the corresponding player names. By using these data structures, we're able to efficiently manage game status information and ensure smooth gameplay.#
+
 # Non-standard C/C++ Libraries
 ***Important!***  
 Our game uses the **ncurses** library for in-game content display.
