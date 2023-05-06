@@ -9,6 +9,40 @@
 #include <array>
 using namespace std;
 
+int obtainItem(int fruitX, int fruitY, WINDOW *win, bool &itemSpawn, clock_t& ItemSpawntime, int items[2][2], int &chooseItem, int width, int height ) {
+    double elapsedTime3 = static_cast<float>(clock() - ItemSpawntime) / CLOCKS_PER_SEC;
+    if (elapsedTime3 >= 5 && itemSpawn == false ) {
+        itemSpawn = true;
+        return -1;
+    } else if (itemSpawn == true) {
+        
+        if (chooseItem == 0) {
+            mvwprintw(win, items[chooseItem][1], items[chooseItem][0], "+");
+        } else if (chooseItem == 1) {
+            mvwprintw(win, items[chooseItem][1], items[chooseItem][0], "S");
+        }
+        
+        if (fruitX == items[chooseItem][0] && fruitY == items[chooseItem][1]) {
+            itemSpawn = false;
+            ItemSpawntime = clock();
+            mvwprintw(win, items[chooseItem][1], items[chooseItem][0], " ");
+            items[chooseItem][0] = (rand() % (width-3))+1;
+            items[chooseItem][1] = (rand() % (height-3))+1;
+            int prevItem = chooseItem;
+            chooseItem = rand()%2;
+            return prevItem;
+
+        } else {
+            return -1;
+        }
+        
+    } else {
+        return -1;
+    }
+    
+
+}
+
 void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width, int &portalscore) {
     int PortalChosen; bool touched = false; 
     for (int i=0; i<3;i++) {
@@ -400,6 +434,17 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
         clock_t GameEndtime;
         Gametime = clock();
 
+        //check item spawn time
+        clock_t ItemSpawntime;
+        ItemSpawntime = clock();
+        bool itemSpawn = false;
+        int chooseItem = rand()%2;
+        bool itemObtained = false;
+        int prevItem;
+        clock_t effectDuration;
+        effectDuration = clock();
+
+
         //some scoring para
         int portalscore = 0;
         float updateDelay = 0.1; //snake Update Delay
@@ -410,6 +455,9 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
         
         int LastX1, LastY1;
         bool gameOver = false;
+
+        bool obtainedItem1 = false;
+        bool obtainedItem2 = false;
 
         int Portal[3][2]; //Store coordinates of Portals
         unsigned int srand(time(NULL)); //set random seed
@@ -436,7 +484,12 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
             delete k1; //free dynamic memory
             delete k2;
         }
-        
+        int items[2][2];
+        for (int i=0; i<2; i++) {
+            items[i][0] = (rand() % (width-3))+1;
+            items[i][1] = (rand() % (height-3))+1;
+        }
+
         while (inputFruit != "x") { //quits when "x" is pressed 
             noecho();
 
@@ -487,6 +540,24 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
             if (elapsedTime2 >= updateDelay1) { //if time passed is less than threshold, does not receive input
 
                 wrefresh(win);
+                
+                int obtained = obtainItem(fruitX, fruitY, win, itemSpawn, ItemSpawntime, items, chooseItem, width ,height);
+                double elapsedTime4 = static_cast<float>(clock() - effectDuration) / CLOCKS_PER_SEC;
+                if (obtained == 0) {
+                    prevItem = obtained;
+                    effectDuration = clock();
+                    gameSpeed1 += 1;
+                } else if (obtained == 1) {
+                    prevItem = obtained;
+                    effectDuration = clock();
+                    gameSpeed /= 10;
+                } else if (prevItem==0 && elapsedTime4 >= 3 ) {
+                    prevItem = -1;
+                    gameSpeed1 -= 1;
+                } else if (prevItem == 1 && elapsedTime4 >= 1.5) {
+                    prevItem = -1;
+                    gameSpeed *= 10;
+                }
 
                 inputFruit = wgetch(win); //get user input
 
@@ -589,12 +660,12 @@ int main() {
                         filename = "gameWin.txt"; //prints win screen
                     }
                     printArt(win, filename); 
+                    clearWindow(win, height, width);
                     
                     string c;
                     do {
                         c = wgetch(win);
                     } while (c != "\n"); //waits for any input
-                    clearWindow(win, height, width);
 
                     scorescreen(win,height,timescore,portalscore);
                     do {
