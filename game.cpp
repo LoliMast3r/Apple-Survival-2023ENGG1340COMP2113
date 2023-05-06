@@ -7,108 +7,77 @@
 #include <algorithm>
 #include <cmath>
 #include <array>
+#include "obtainItem.h"
+#include "PortalGen.h"
+#include "clearwindow.h"
 using namespace std;
 
-int obtainItem(int fruitX, int fruitY, WINDOW *win, bool &itemSpawn, clock_t& ItemSpawntime, int items[2][2], int &chooseItem, int width, int height ) {
-    //generates item and allows players to collect it
-    double elapsedTime3 = static_cast<float>(clock() - ItemSpawntime) / CLOCKS_PER_SEC;
-    if (elapsedTime3 >= 5 && itemSpawn == false ) {
-        //prints item if only 5 seconds have passed after user last picked up an item
-        itemSpawn = true; 
-        return -1;
-    } else if (itemSpawn == true) {
-        
-        if (chooseItem == 0) { //prints either one of "+" or "S"
-            mvwprintw(win, items[chooseItem][1], items[chooseItem][0], "+");
-        } else if (chooseItem == 1) {
-            mvwprintw(win, items[chooseItem][1], items[chooseItem][0], "S");
-        }
-        
-        if (fruitX == items[chooseItem][0] && fruitY == items[chooseItem][1]) {
-            //if picked up, waits an extra 5 seconds before showing another item
-            itemSpawn = false;
-            ItemSpawntime = clock();
-            mvwprintw(win, items[chooseItem][1], items[chooseItem][0], " ");
-            items[chooseItem][0] = (rand() % (width-3))+1; //assign new location for item
-            items[chooseItem][1] = (rand() % (height-3))+1;
-            int prevItem = chooseItem;
-            chooseItem = rand()%2;
-            return prevItem;
+void fruitMovement(string inputFruit, string& prevMoveFruit, int& fruitX, int& fruitY, float &updateDelay1, double gameSpeed1, double& adjust) {
+    //handles the movement of the fruit with user input
+    if (inputFruit == "w") {
+        fruitY--;
+        prevMoveFruit = inputFruit;
+        updateDelay1 = 0.14 / gameSpeed1 - adjust; 
+        //update delay refers to time waited before moving one unit everytime, basically how fast the snake moves
+        //as we want to speed up the snake over time, gamespeed serves as a factor that we can increase/decrease snake speed
+        //since 1 height unit = 2 width units, vertical has to be 0.5 times horizontal speed
+    } else if (inputFruit == "a") {
+        fruitX--;
+        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
+        prevMoveFruit = inputFruit; 
+        //prevMove stores the previous move so that if no key is pressed, the object continues in same direction
+    } else if (inputFruit == "s") {
+        fruitY++;
+        prevMoveFruit = inputFruit;
+        updateDelay1 = 0.14 / gameSpeed1 - adjust;
+    } else if (inputFruit == "d") {
+        fruitX++;
+        prevMoveFruit = inputFruit;
+        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
+    } else if (prevMoveFruit == "s") {
+        fruitY++;
+        updateDelay1 = 0.14 / gameSpeed1 - adjust;
+    } else if (prevMoveFruit == "d") {
+        fruitX++;
+        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
+    } else if (prevMoveFruit == "a") {
+        fruitX--;
+        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
+    } else if (prevMoveFruit == "w") {
+        fruitY--;
+        updateDelay1 = 0.14 / gameSpeed1 - adjust;
+    }
+}
 
-        } else {
-            return -1;
-        }
-        
-    } else {
-        return -1;
+void snakeMovement(string direction, string& prevMove, int& snakeX, int& snakeY, float& updateDelay, double gameSpeed, double& snakeadjust) {
+    //handles the movement of the snake depending on the command from snakePathFind()
+    //same logic as fruit movement
+    if (direction == "t" && prevMove != "g") {
+        snakeY--;
+        prevMove = direction;
+        updateDelay = 0.2 / gameSpeed + snakeadjust;
+    } else if (direction == "f" && prevMove != "h") {
+        snakeX--;
+        prevMove = direction;
+        updateDelay = 0.1 / gameSpeed + snakeadjust/2;
+    } else if (direction == "g" && prevMove != "t") {
+        snakeY++;
+        prevMove = direction;
+        updateDelay = 0.2 / gameSpeed + snakeadjust;
+    } else if (direction == "h" && prevMove != "f") {
+        snakeX++;
+        prevMove = direction;
+        updateDelay = 0.1 / gameSpeed + snakeadjust/2;
+    } else if (prevMove == "g") {
+        snakeY++;
+    } else if (prevMove == "h") {
+        snakeX++;
+    } else if (prevMove == "f") {
+        snakeX--;
+    } else if (prevMove == "t") {
+        snakeY--;
     }
     
-
-}
-
-void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width, int &portalscore) {
-    int PortalChosen; bool touched = false; 
-    for (int i=0; i<3;i++) {
-        if (fruitX == Portal[i][0] && fruitY == Portal[i][1]) { //if apple touches portal....
-            touched = true;
-            portalscore+=1;
-            while (true) {
-                PortalChosen = rand()%3; //randomly select another portal to teleport to
-                if (PortalChosen != i) { //make sure it isn't the same portal
-                    break;
-                }
-            }
-            fruitX = Portal[PortalChosen][0]; //teleports fruit to chosen portal
-            fruitY = Portal[PortalChosen][1];
-            mvwprintw(win, Portal[i][1], Portal[i][0], " " ); //removes the previous portals
-            mvwprintw(win, Portal[PortalChosen][1], Portal[PortalChosen][0], " " );
-            int *k1,*k2;
-            bool portalduplicate=true;
-            while (portalduplicate==true) { //check portals are not duplicate
-                portalduplicate=false;
-                k1=new int; //create dynamic memory of k1,k2
-                k2=new int;
-                *k1=(rand() % (width-3))+1;
-                *k2=(rand() % (height-3))+1;
-                for (int j=0; j<3; j++) {    
-                    if (*k1==Portal[j][0] || *k2==Portal[j][1]) {
-                        portalduplicate=true;
-                        break;
-                    }
-                }
-            }
-            Portal[i][0] = *k1; //create new portals
-            Portal[i][1] = *k2;
-            portalduplicate=true;
-            while (portalduplicate==true) { //check portals are not duplicate
-                portalduplicate=false;
-                *k1=(rand() % (width-3))+1;
-                *k2=(rand() % (height-3))+1;
-                for (int j=0; j<3; j++) {    
-                    if (*k1==Portal[j][0] || *k2==Portal[j][1]) {
-                        portalduplicate=true;
-                        break;
-                    }
-                }
-            }
-            Portal[PortalChosen][0] = *k1; //create new portals
-            Portal[PortalChosen][1] = *k2;
-            delete k1; //release dynamic memory
-            delete k2;
-            break;
-        }
-    }
-    for (int i=0; i<3; i++) {
-        mvwprintw(win, Portal[i][1], Portal[i][0], "@" ); //Prints the Portal 
-    }
-}
-void clearWindow(WINDOW *win, int height, int width) {
-    //fills window with space (" ")
-    for (int i=1; i<height-1; i++) {
-        for (int j=1; j<width-1;j++) {
-            mvwprintw(win, i, j, " ");
-        }
-    }
 }
 
 void mainMenu(WINDOW *win, int height, int width, string &select, int &slotNum) {
@@ -283,75 +252,6 @@ void scorescreen(WINDOW *win,int height,int timeS,int PortalS,int ItemS){
         }
     }
     importscore(name,total);
-}
-
-void fruitMovement(string inputFruit, string& prevMoveFruit, int& fruitX, int& fruitY, float &updateDelay1, double gameSpeed1, double& adjust) {
-    //handles the movement of the fruit with user input
-    if (inputFruit == "w") {
-        fruitY--;
-        prevMoveFruit = inputFruit;
-        updateDelay1 = 0.14 / gameSpeed1 - adjust; 
-        //update delay refers to time waited before moving one unit everytime, basically how fast the snake moves
-        //as we want to speed up the snake over time, gamespeed serves as a factor that we can increase/decrease snake speed
-        //since 1 height unit = 2 width units, vertical has to be 0.5 times horizontal speed
-    } else if (inputFruit == "a") {
-        fruitX--;
-        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
-        prevMoveFruit = inputFruit; 
-        //prevMove stores the previous move so that if no key is pressed, the object continues in same direction
-    } else if (inputFruit == "s") {
-        fruitY++;
-        prevMoveFruit = inputFruit;
-        updateDelay1 = 0.14 / gameSpeed1 - adjust;
-    } else if (inputFruit == "d") {
-        fruitX++;
-        prevMoveFruit = inputFruit;
-        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
-    } else if (prevMoveFruit == "s") {
-        fruitY++;
-        updateDelay1 = 0.14 / gameSpeed1 - adjust;
-    } else if (prevMoveFruit == "d") {
-        fruitX++;
-        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
-    } else if (prevMoveFruit == "a") {
-        fruitX--;
-        updateDelay1 = 0.07 / gameSpeed1 - adjust/2;
-    } else if (prevMoveFruit == "w") {
-        fruitY--;
-        updateDelay1 = 0.14 / gameSpeed1 - adjust;
-    }
-}
-
-
-void snakeMovement(string direction, string& prevMove, int& snakeX, int& snakeY, float& updateDelay, double gameSpeed, double& snakeadjust) {
-    //handles the movement of the snake depending on the command from snakePathFind()
-    //same logic as fruit movement
-    if (direction == "t" && prevMove != "g") {
-        snakeY--;
-        prevMove = direction;
-        updateDelay = 0.2 / gameSpeed + snakeadjust;
-    } else if (direction == "f" && prevMove != "h") {
-        snakeX--;
-        prevMove = direction;
-        updateDelay = 0.1 / gameSpeed + snakeadjust/2;
-    } else if (direction == "g" && prevMove != "t") {
-        snakeY++;
-        prevMove = direction;
-        updateDelay = 0.2 / gameSpeed + snakeadjust;
-    } else if (direction == "h" && prevMove != "f") {
-        snakeX++;
-        prevMove = direction;
-        updateDelay = 0.1 / gameSpeed + snakeadjust/2;
-    } else if (prevMove == "g") {
-        snakeY++;
-    } else if (prevMove == "h") {
-        snakeX++;
-    } else if (prevMove == "f") {
-        snakeX--;
-    } else if (prevMove == "t") {
-        snakeY--;
-    }
-    
 }
 
 
@@ -698,13 +598,13 @@ int main() {
                     } else if (playerW) {
                         filename = "gameWin.txt"; //prints win screen
                     }
-                    printArt(win, filename);
+                    printArt(win, filename); 
+                    clearWindow(win, height, width);
                     
                     string c;
                     do {
                         c = wgetch(win);
                     } while (c != "\n"); //waits for any input
-                    clearWindow(win, height, width);
 
                     scorescreen(win,height,timescore,portalscore,itemscores);
                     do {
