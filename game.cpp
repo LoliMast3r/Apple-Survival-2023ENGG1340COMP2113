@@ -398,16 +398,16 @@ void story(WINDOW *win, int height, int width) { //prints background story, Pres
     string line8 = "himself to avoid the corruption of mankind!";
     string line9 = "Satan MUST NOT PREVAIL!!!";
     string line15 = "Press S to quit";
-    mvwprintw(win, 1, 1, line1.c_str());
-    mvwprintw(win, 2, 1, line2.c_str());
-    mvwprintw(win, 3, 1, line3.c_str());
-    mvwprintw(win, 4, 1, line4.c_str());
-    mvwprintw(win, 5, 1, line5.c_str());
-    mvwprintw(win, 6, 1, line6.c_str());
-    mvwprintw(win, 7, 1, line7.c_str());
-    mvwprintw(win, 8, 1, line8.c_str());
-    mvwprintw(win, 9, 1, line9.c_str());
-    mvwprintw(win, 15, (50-15)/2, line15.c_str()); //print line 11 in the middle of the screen
+    mvwprintw(win, 1, 1, "%s", line1.c_str());
+    mvwprintw(win, 2, 1, "%s", line2.c_str());
+    mvwprintw(win, 3, 1, "%s", line3.c_str());
+    mvwprintw(win, 4, 1, "%s",line4.c_str());
+    mvwprintw(win, 5, 1, "%s",line5.c_str());
+    mvwprintw(win, 6, 1, "%s",line6.c_str());
+    mvwprintw(win, 7, 1, "%s",line7.c_str());
+    mvwprintw(win, 8, 1, "%s",line8.c_str());
+    mvwprintw(win, 9, 1,"%s", line9.c_str());
+    mvwprintw(win, 15, (50-15)/2, "%s",line15.c_str()); //print line 11 in the middle of the screen
     string inputOut = "p";
     while (inputOut != "s") {
         inputOut = wgetch(win);
