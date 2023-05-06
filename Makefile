@@ -22,9 +22,9 @@ clearscores:
 	rm -f highscore.txt
 
 clean:
-	rm -f game.o game
+	rm -f game.o game obtainItem.o PortalGen.o clearwindow.o
 
 uninstall:
-	rm -f game.o game highscore.txt
+	rm -f game.o game highscore.txt obtainItem.o PortalGen.o clearwindow.o
 
 .PHONY: clearscores clean uninstall
