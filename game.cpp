@@ -40,6 +40,7 @@ int obtainItem(int fruitX, int fruitY, WINDOW *win, bool &itemSpawn, clock_t& It
         return -1;
     }
     
+
 }
 
 void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int height, int width, int &portalscore) {
@@ -304,12 +305,16 @@ void fruitMovement(string inputFruit, string& prevMoveFruit, int& fruitX, int& f
         updateDelay1 = 0.07 / gameSpeed1;
     } else if (prevMoveFruit == "s") {
         fruitY++;
+        updateDelay1 = 0.14 / gameSpeed1;
     } else if (prevMoveFruit == "d") {
         fruitX++;
+        updateDelay1 = 0.07 / gameSpeed1;
     } else if (prevMoveFruit == "a") {
         fruitX--;
+        updateDelay1 = 0.07 / gameSpeed1;
     } else if (prevMoveFruit == "w") {
         fruitY--;
+        updateDelay1 = 0.14 / gameSpeed1;
     }
 }
 
@@ -432,7 +437,7 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
         clock_t ElapsedGametime;
         clock_t GameEndtime;
         Gametime = clock();
-    
+
         //check item spawn time
         clock_t ItemSpawntime;
         ItemSpawntime = clock();
@@ -442,6 +447,7 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
         int prevItem;
         clock_t effectDuration;
         effectDuration = clock();
+
 
         //some scoring para
         int portalscore = 0;
@@ -453,6 +459,9 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
         
         int LastX1, LastY1;
         bool gameOver = false;
+
+        bool obtainedItem1 = false;
+        bool obtainedItem2 = false;
 
         int Portal[3][2]; //Store coordinates of Portals
         unsigned int srand(time(NULL)); //set random seed
@@ -479,14 +488,11 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
             delete k1; //free dynamic memory
             delete k2;
         }
-    
-        //store coordinates of Items
         int items[2][2];
         for (int i=0; i<2; i++) {
             items[i][0] = (rand() % (width-3))+1;
             items[i][1] = (rand() % (height-3))+1;
         }
-        
         while (inputFruit != "x") { //quits when "x" is pressed 
             noecho();
 
@@ -537,8 +543,6 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
             if (elapsedTime2 >= updateDelay1) { //if time passed is less than threshold, does not receive input
 
                 wrefresh(win);
-
-                //effects obtained by "eating" the Item
                 int obtained = obtainItem(fruitX, fruitY, win, itemSpawn, ItemSpawntime, items, chooseItem, width ,height);
                 double elapsedTime4 = static_cast<float>(clock() - effectDuration) / CLOCKS_PER_SEC;
                 if (obtained == 0) {
@@ -556,7 +560,6 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
                     prevItem = -1;
                     gameSpeed *= 10;
                 }
-                
                 inputFruit = wgetch(win); //get user input
 
                 //store the previous position of the fruit to remove after, like snake
@@ -658,12 +661,12 @@ int main() {
                         filename = "gameWin.txt"; //prints win screen
                     }
                     printArt(win, filename); 
+                    clearWindow(win, height, width);
                     
                     string c;
                     do {
                         c = wgetch(win);
                     } while (c != "\n"); //waits for any input
-                    clearWindow(win, height, width);
 
                     scorescreen(win,height,timescore,portalscore);
                     do {
