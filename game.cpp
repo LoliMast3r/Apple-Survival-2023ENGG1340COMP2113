@@ -10,23 +10,26 @@
 using namespace std;
 
 int obtainItem(int fruitX, int fruitY, WINDOW *win, bool &itemSpawn, clock_t& ItemSpawntime, int items[2][2], int &chooseItem, int width, int height ) {
+    //generates item and allows players to collect it
     double elapsedTime3 = static_cast<float>(clock() - ItemSpawntime) / CLOCKS_PER_SEC;
     if (elapsedTime3 >= 5 && itemSpawn == false ) {
-        itemSpawn = true;
+        //prints item if only 5 seconds have passed after user last picked up an item
+        itemSpawn = true; 
         return -1;
     } else if (itemSpawn == true) {
         
-        if (chooseItem == 0) {
+        if (chooseItem == 0) { //prints either one of "+" or "S"
             mvwprintw(win, items[chooseItem][1], items[chooseItem][0], "+");
         } else if (chooseItem == 1) {
             mvwprintw(win, items[chooseItem][1], items[chooseItem][0], "S");
         }
         
         if (fruitX == items[chooseItem][0] && fruitY == items[chooseItem][1]) {
+            //if picked up, waits an extra 5 seconds before showing another item
             itemSpawn = false;
             ItemSpawntime = clock();
             mvwprintw(win, items[chooseItem][1], items[chooseItem][0], " ");
-            items[chooseItem][0] = (rand() % (width-3))+1;
+            items[chooseItem][0] = (rand() % (width-3))+1; //assign new location for item
             items[chooseItem][1] = (rand() % (height-3))+1;
             int prevItem = chooseItem;
             chooseItem = rand()%2;
@@ -101,8 +104,8 @@ void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int hei
 }
 void clearWindow(WINDOW *win, int height, int width) {
     //fills window with space (" ")
-    for (int i=1; i<height-2; i++) {
-        for (int j=1; j<width-2;j++) {
+    for (int i=1; i<height-1; i++) {
+        for (int j=1; j<width-1;j++) {
             mvwprintw(win, i, j, " ");
         }
     }
@@ -112,7 +115,7 @@ void mainMenu(WINDOW *win, int height, int width, string &select, int &slotNum) 
      //select is passed by reference since we need to save the button pressed to detect whether "Enter" is pressed, outside function
     noecho();
     refresh();
-    string Options[4] = {"New Game", "Help", "Highscore", "Quit"};  //main menu options
+    string Options[4] = {"New Game", "Story", "Highscore", "Quit"};  //main menu options
     
     for (int i=0; i<4; i++) { //prints all four options
         if (i == slotNum) {
@@ -251,7 +254,7 @@ void scorescreen(WINDOW *win,int height,int timeS,int PortalS,int ItemS){
     int total;string name;
     PortalS = PortalS*3;
     total = timeS+PortalS+ItemS;
-    array<string,3> cat = {"Playing Time:","Portal Score:","Item Score:"};
+    array<string,3> cat = {"Playing Time:","Portals Used:","Items Obtained:"};
     array<int,3> ss = {timeS,PortalS,ItemS};
     string title = "Metric             Scores";
     string title2 = "_____________________________";
@@ -384,6 +387,33 @@ void updateGame(clock_t& prevPlayTime, int& tailLength, double& gameSpeed) {
     }
 }
 
+void story(WINDOW *win, int height, int width) { //prints background story, Press 's' to quit              
+    string line1 = "In the Garden of Eden, God once created the ";
+    string line2 = " first ever human beings to exist -- Adam and";
+    string line3 = "Eve. It was a perfect place, free from sin and";
+    string line4 = "evil. However, God warned about a forbidden";
+    string line5 = "apple they should not eat and Satan, in the form";
+    string line6 = "of a snake, is planning to lure them into eating";
+    string line7 = " it. You are the apple, run from the devil";
+    string line8 = "himself to avoid the corruption of mankind!";
+    string line9 = "Satan MUST NOT PREVAIL!!!";
+    string line15 = "Press S to quit";
+    mvwprintw(win, 1, 1, line1.c_str());
+    mvwprintw(win, 2, 1, line2.c_str());
+    mvwprintw(win, 3, 1, line3.c_str());
+    mvwprintw(win, 4, 1, line4.c_str());
+    mvwprintw(win, 5, 1, line5.c_str());
+    mvwprintw(win, 6, 1, line6.c_str());
+    mvwprintw(win, 7, 1, line7.c_str());
+    mvwprintw(win, 8, 1, line8.c_str());
+    mvwprintw(win, 9, 1, line9.c_str());
+    mvwprintw(win, 15, (50-15)/2, line15.c_str()); //print line 11 in the middle of the screen
+    string inputOut = "p";
+    while (inputOut != "s") {
+        inputOut = wgetch(win);
+    }
+
+}
 
 void checkBoundary(int& Pos, int bound1, int bound2) {
     //allows the snake and fruit to pass through the boundary
@@ -493,12 +523,12 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
             delete k1; //free dynamic memory
             delete k2;
         }
-        int items[2][2];
+        int items[2][2]; //generates coordinates of items for the first time
         for (int i=0; i<2; i++) {
             items[i][0] = (rand() % (width-3))+1;
             items[i][1] = (rand() % (height-3))+1;
         }
-        while (inputFruit != "x") { //quits when "x" is pressed 
+        while (true) { 
             noecho();
 
             updateGame(prevPlayTime, tailLength, gameSpeed); //check if speed up snake and increase tail
@@ -551,21 +581,21 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
                 int obtained = obtainItem(fruitX, fruitY, win, itemSpawn, ItemSpawntime, items, chooseItem, width ,height);
                 double elapsedTime4 = static_cast<float>(clock() - effectDuration) / CLOCKS_PER_SEC;
                 if (obtained == 0) {
-                    prevItem = obtained;
-                    effectDuration = clock();
-                    adjust = 0.06;
-                    itemscores += 3;
+                    prevItem = obtained; //stores what item is picked up to reverse the effects accordingly afterwards
+                    effectDuration = clock();//reset timer for next item spawn time
+                    adjust = 0.06; //speeds up player
+                    itemscores += 3; //increases points
                 } else if (obtained == 1) {
                     prevItem = obtained;
                     effectDuration = clock();
-                    snakeadjust = 1;
+                    snakeadjust = 1; //stuns snake
                     itemscores += 3;
                 } else if (prevItem==0 && elapsedTime4 >= 3 ) {
                     prevItem = -1;
-                    adjust = 0;
+                    adjust = 0; //reverses effect
                 } else if (prevItem == 1 && elapsedTime4 >= 1.5) {
                     prevItem = -1;
-                    snakeadjust = 0;
+                    snakeadjust = 0; //reverses effect
                 }
                 inputFruit = wgetch(win); //get user input
 
@@ -636,7 +666,7 @@ int main() {
     int width = 50;
     int maxX, maxY;
     getmaxyx(stdscr, maxY, maxX);
-    mvprintw(1, (maxX-10)/2, "Apple Survival");  //prints game name 
+    mvprintw(1, (maxX-14)/2, "Apple Survival");  //prints game name 
     WINDOW *win = newwin(height, width, (maxY-height)/2, (maxX-width)/2); //sets window to centre
     refresh();
 
@@ -669,12 +699,12 @@ int main() {
                         filename = "gameWin.txt"; //prints win screen
                     }
                     printArt(win, filename); 
+                    clearWindow(win, height, width);
                     
                     string c;
                     do {
                         c = wgetch(win);
                     } while (c != "\n"); //waits for any input
-                    clearWindow(win, height, width);
 
                     scorescreen(win,height,timescore,portalscore,itemscores);
                     do {
@@ -685,10 +715,13 @@ int main() {
                 } else if (slotNum == 3) {//and quit is selected
                     fullGameOver = true;
                     break; //quits game
-                }
-                if (slotNum == 2) { //and Highscore is selected
+                } else if (slotNum == 2) { //and Highscore is selected
                     clearWindow(win, height, width);
                     Highscores(win, height, width, select,1); //Display Highscores
+                } else if (slotNum == 1) {
+                    clearWindow(win, height, width);
+                    story(win, height, width);
+                    clearWindow(win, height, width);
                 }
             }
         }
