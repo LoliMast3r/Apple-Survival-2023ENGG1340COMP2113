@@ -1,10 +1,10 @@
 # Apple Survival: The Classic Snake Game with a Twist
 **Are you tired of playing the same old snake game?  
-Then try Apple Rush, the game where you play as the apple trying to avoid being eaten by the snake!**
+Then try Apple Survival, the game where you play as the apple trying to avoid being eaten by the snake!**
 
 # Meet the Team
 We are Group 77, a team of five students from ENGG1340-COMP2113(22-23 Sem 2):
-+ Yu Tin Yau  
++ Yu Tin Yau  3036067353
 + Shen Wenqi  3036061799
 + Tsui Chit Hei  3036067901
 + Wong Kai Ching  3036067884
@@ -13,21 +13,31 @@ We are Group 77, a team of five students from ENGG1340-COMP2113(22-23 Sem 2):
 Together, we've taken the classic snake game and given it a fresh twist, creating a game that is both nostalgic and exciting.
 
 # How To Play
-Play as the apple and use the WASD keys to move around the screen. 
-Avoid the snake's head and body as you collect apples and try to stay alive as long as possible.
+Play as the apple and use the WASD (UP, LEFT, DOWN, RIGHT) keys to move around the screen.
+It is suggested to not hold down the key, but instead press it only when you want to change directions.
+Avoid the snake's head as you collect apples and try to stay alive as long as possible.
+Beware though, the snake speed increases over time!
 
-# Exiciting Features
+# Exciting Features
 ## Portals
 Use portals to instantly teleport to other positions on the map, making gameplay more dynamic and strategic.
-We've used arrays and dynamic memory management to ensure smooth gameplay.
+We've used arrays and dynamic memory management to ensure smooth gameplay. Portals are represented by the "@" symbol. When the player enters one,
+he/she gets teleported randomly to another portal.
+
+The random generation of portals fulfills the first requirement of random events.
+
+Our portal also utitlizes dynamic memory is make efficient use of memory, which fulfills the third requirement.
 
 ## Highscores
 Keep track of your scores and compete with others on the highscores list.
-We've used file I/O and sorting algorithms to implement this feature.
+We've used file I/O and sorting algorithms to implement this feature, which fulfills the foruth requirement
 
 ## Random Events
 Powerups and perks randomly appear in the game, giving you an extra boost to help you stay alive longer. 
-You never know what you might get!
+"S" is an item that stuns the snake temporarily, while the "+" item increases player speed temporarily
+You never know what you might get! 
+
+The random generation of items fulfills the first requirement of random events.
 
 # Non-standard C/C++ Libraries
 ***Important!***  
@@ -37,8 +47,10 @@ If you don't have ncurses installed on your operating system, don't worry!
 You can easily install it by running the following command:
 > sudo apt-get install libncurses5-dev libncursesw5-dev
 
+The library is used for generating graphics and animations so that the user can a smooth experience.
+
 # Getting Started
-To start playing Apple Rush, simply type the following commands into your terminal:
+To start playing Apple Survival, simply type the following commands into your terminal:
 > make game  
 > ./game
 
