@@ -48,7 +48,7 @@ void PortalGen(int &fruitX, int &fruitY, int Portal[3][2], WINDOW  *win, int hei
     for (int i=0; i<3;i++) {
         if (fruitX == Portal[i][0] && fruitY == Portal[i][1]) { //if apple touches portal....
             touched = true;
-            portalscore=portalscore+1;
+            portalscore+=1;
             while (true) {
                 PortalChosen = rand()%3; //randomly select another portal to teleport to
                 if (PortalChosen != i) { //make sure it isn't the same portal
@@ -249,7 +249,7 @@ void scorescreen(WINDOW *win,int height,int timeS,int PortalS,int ItemS){
     refresh();
     nodelay(win, false);
     int total;string name;
-    PortalS = PortalS*10;
+    PortalS = PortalS*3;
     total = timeS+PortalS+ItemS;
     array<string,3> cat = {"Playing Time:","Portals Used:","Items Obtained:"};
     array<int,3> ss = {timeS,PortalS,ItemS};
@@ -396,7 +396,7 @@ void checkBoundary(int& Pos, int bound1, int bound2) {
     
 }
 
-int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, int &timescore) {
+int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, int &timescore, int &portalscore) {
     //spawn position of snake head (X, Y coord)
         int snakeX = 1;
         int snakeY = 1;
@@ -451,7 +451,7 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
 
 
         //some scoring para
-        int portalscore = 0;
+        
         float updateDelay = 0.1; //snake Update Delay
         double gameSpeed = 1; //factor that affects snake speed
 
@@ -554,12 +554,12 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
                     prevItem = obtained;
                     effectDuration = clock();
                     adjust = 0.06;
-                    itemscores += 15;
+                    itemscores += 3;
                 } else if (obtained == 1) {
                     prevItem = obtained;
                     effectDuration = clock();
                     snakeadjust = 1;
-                    itemscores += 15;
+                    itemscores += 3;
                 } else if (prevItem==0 && elapsedTime4 >= 3 ) {
                     prevItem = -1;
                     adjust = 0;
@@ -620,7 +620,7 @@ int snakeGame(WINDOW *win, int height, int width, bool &snakeW, bool &playerW, i
             if (gameOver == true) {;
                 GameEndtime = clock();
                 timescore = ((double)(GameEndtime - Gametime))/CLOCKS_PER_SEC;
-                return portalscore,itemscores;
+                return itemscores;
             }
         }
     return 0;
@@ -656,8 +656,9 @@ int main() {
             if (select == "\n") { //if enter is pressed 
                 if (slotNum == 0) { //and new game is selected
                     int timescore,portalscore,itemscores;
+                    portalscore = 0;
                     clearWindow(win, height, width); 
-                    portalscore,itemscores = snakeGame(win, height, width, snakeW, playerW,timescore); //start snake game
+                    itemscores = snakeGame(win, height, width, snakeW, playerW,timescore, portalscore); //start snake game
 
                     clearWindow(win, height, width);
 
